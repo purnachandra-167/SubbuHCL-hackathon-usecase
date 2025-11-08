@@ -10,4 +10,6 @@ RUN ls -ltr
 
 RUN  mvn package
 
+RUN ls -ltR
+
 CMD [ "java -jar" "/app/java/app.jar"]
