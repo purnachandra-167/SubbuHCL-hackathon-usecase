@@ -1,10 +1,10 @@
-FROM eclipse-temurin:11-jdk-alpine
+FROM eclipse-temurin:17-jdk-alpine
 
 
 WORKDIR /app/java
 
 COPY . .
 
-RUN mvn complie
+RUN mvn compile
 
 CMD [ "java -jar" "/app/java/app.jar"]
