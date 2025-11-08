@@ -6,7 +6,7 @@ on:
     branches:
       - "main"
 
- 
+  workflow_dispatch:
 
 env:
   PROJECT_ID: 'adroit-booth-477606-p4' 
