@@ -1,0 +1,10 @@
+FROM openjdk:26-ea-trixie
+
+
+WORKDIR /app/java
+
+COPY . .
+
+RUN mvn complie
+
+CMD [ "java -jar" "/app/java/app.jar"]
