@@ -4,7 +4,7 @@ name: 'Build and Deploy to GKE'
 on:
   push:
     branches:
-      - '"main"'
+      - "main"
 
 env:
   PROJECT_ID: 'adroit-booth-477606-p4' 
@@ -13,14 +13,14 @@ env:
   GKE_ZONE: 'us-central1' # TODO: update to your cluster zone
   DEPLOYMENT_NAME: 'gke-test' # TODO: update to your deployment name
   # REPOSITORY: 'samples' # TODO: update to your Artifact Registry docker repository name
-  # IMAGE: 'static-site'
-  # WORKLOAD_IDENTITY_PROVIDER: 'projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider' # TODO: update to your workload identity provider
+  IMAGE: 'application-service'
+  WORKLOAD_IDENTITY_PROVIDER: 'projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider' # TODO: update to your workload identity provider
 
 jobs:
   setup-build-publish-deploy:
     name: 'Setup, Build, Publish, and Deploy'
     runs-on: 'ubuntu-latest'
-    environment: 'development'
+
 
     permissions:
       contents: 'write'
@@ -51,6 +51,7 @@ jobs:
         with:
           cluster_name: '${{ env.GKE_CLUSTER }}'
           location: '${{ env.GKE_ZONE }}'
+       
 
       # Build the Docker image
       - name: 'Build and push Docker container'
@@ -65,17 +66,17 @@ jobs:
 
           docker push "${DOCKER_TAG}"
 
-      # Set up kustomize
-      - name: 'Set up Kustomize'
-        run: |-
-          curl -sfLo kustomize https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv5.4.3/kustomize_v5.4.3_linux_amd64.tar.gz
-          chmod u+x ./kustomize
+      # # Set up kustomize
+      # - name: 'Set up Kustomize'
+      #   run: |-
+      #     curl -sfLo kustomize https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv5.4.3/kustomize_v5.4.3_linux_amd64.tar.gz
+      #     chmod u+x ./kustomize
 
-      # Deploy the Docker image to the GKE cluster
-      - name: 'Deploy to GKE'
-        run: |-
-          # replacing the image name in the k8s template
-          ./kustomize edit set image LOCATION-docker.pkg.dev/PROJECT_ID/REPOSITORY/IMAGE:TAG=$GAR_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:$GITHUB_SHA
-          ./kustomize build . | kubectl apply -f -
-          kubectl rollout status deployment/$DEPLOYMENT_NAME
-          kubectl get services -o wide
+      # # Deploy the Docker image to the GKE cluster
+      # - name: 'Deploy to GKE'
+      #   run: |-
+      #     # replacing the image name in the k8s template
+      #     ./kustomize edit set image LOCATION-docker.pkg.dev/PROJECT_ID/REPOSITORY/IMAGE:TAG=$GAR_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:$GITHUB_SHA
+      #     ./kustomize build . | kubectl apply -f -
+      #     kubectl rollout status deployment/$DEPLOYMENT_NAME
+      #     kubectl get services -o wide
