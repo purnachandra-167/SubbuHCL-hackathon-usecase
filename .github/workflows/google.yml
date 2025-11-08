@@ -6,6 +6,8 @@ on:
     branches:
       - "main"
 
+ 
+
 env:
   PROJECT_ID: 'adroit-booth-477606-p4' 
   GAR_LOCATION: 'us-central1' # TODO: update to your region
@@ -13,9 +15,15 @@ env:
   GKE_ZONE: 'us-central1' # TODO: update to your cluster zone
   DEPLOYMENT_NAME: 'gke-test' # TODO: update to your deployment name
   # REPOSITORY: 'samples' # TODO: update to your Artifact Registry docker repository name
-  IMAGE: 'application-service'
+  IMAGE1: 'application-service'
+  IMAGE2: 'order-service'
+  IMAGE3: 'patient-service'
   WORKLOAD_IDENTITY_PROVIDER: 'projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider' # TODO: update to your workload identity provider
+  Dockerfile-1 : /application-service/src/Dockerfile-application-service
+  Dockerfile-2 : /order-service/Dockerfile-order-service
+  Dockerfile-3: /patient-service/src/Dockerfile-patient-service
 
+  
 jobs:
   setup-build-publish-deploy:
     name: 'Setup, Build, Publish, and Deploy'
@@ -54,18 +62,44 @@ jobs:
        
 
       # Build the Docker image
-      - name: 'Build and push Docker container'
+      - name: 'Build and push Docker container for application-servcie '
         run: |-
-          DOCKER_TAG="${GAR_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${IMAGE}:${GITHUB_SHA}"
+          DOCKER_TAG="${GAR_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${IMAGE1}:${GITHUB_SHA}"
 
           docker build \
+            -- -f "${Dockerfile-1}
             --tag "${DOCKER_TAG}" \
             --build-arg GITHUB_SHA="${GITHUB_SHA}" \
             --build-arg GITHUB_REF="${GITHUB_REF}" \
             .
 
           docker push "${DOCKER_TAG}"
+          
+      - name: 'Build and push Docker container for order-service '
+        run: |-
+          DOCKER_TAG="${GAR_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${IMAGE2}:${GITHUB_SHA}"
 
+          docker build \
+            -- -f "${Dockerfile-1}
+            --tag "${DOCKER_TAG}" \
+            --build-arg GITHUB_SHA="${GITHUB_SHA}" \
+            --build-arg GITHUB_REF="${GITHUB_REF}" \
+            .
+
+          docker push "${DOCKER_TAG}"
+          
+      - name: 'Build and push Docker container for patient-service '
+        run: |-
+          DOCKER_TAG="${GAR_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${IMAGE3}:${GITHUB_SHA}"
+
+          docker build \
+            -- -f "${Dockerfile-1}
+            --tag "${DOCKER_TAG}" \
+            --build-arg GITHUB_SHA="${GITHUB_SHA}" \
+            --build-arg GITHUB_REF="${GITHUB_REF}" \
+            .
+
+          docker push "${DOCKER_TAG}"
       # # Set up kustomize
       # - name: 'Set up Kustomize'
       #   run: |-
