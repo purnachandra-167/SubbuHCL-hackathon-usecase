@@ -36,12 +36,20 @@ jobs:
       
       -  name: Set up Docker Buildx
          uses: docker/setup-buildx-action@v3
-      
+         
       -  name: Build and push
          uses: docker/build-push-action@v6
          with:
           push: true
-          tags: application-service
-          file: application-service/src/Dockerfile-application-service
+          tags: order-service
+          file: order-service/Dockerfile-order-service
+         
+      
+      # -  name: Build and push
+      #    uses: docker/build-push-action@v6
+      #    with:
+      #     push: true
+      #     tags: application-service
+      #     file: application-service/src/Dockerfile-application-service
 
         
